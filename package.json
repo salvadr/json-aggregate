@@ -8,6 +8,10 @@
     "test-dev": "jest --watch",
     "build": "parcel build index.js -o json-aggregate.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salvadr/json-aggregate.git"
+  },
   "author": "Salvador Navarrete Garcia",
   "keywords": ["aggregate", "aggregation", "json", "data"],
   "license": "MIT",
