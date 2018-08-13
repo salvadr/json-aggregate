@@ -1,6 +1,6 @@
 {
   "name": "json-aggregate",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "json-aggregate is a javascript utility to perform aggregations on JSON-formatted data.",
   "main": "index.js",
   "scripts": {
