@@ -1,0 +1,97 @@
+html, body {
+    padding: 40px 0 0;
+    font-family: "Maven Pro", sans-serif;
+    line-height: 1.8em;
+    color: #272727;
+}
+* {
+    box-sizing: border-box;
+}
+
+h1 {
+    margin: 0 0 40px;
+}
+
+h2, h3, h4 {
+    margin: 0 0 20px;
+}
+
+ul {
+    margin: 0 0 20px;
+    padding: 0;
+    list-style-type: none;
+}
+
+li {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #5C80BC;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #4D6C9E;
+}
+
+code {
+    display: block;
+    padding: 12px;
+    font: normal 0.9em "Source Code Pro", monospace;
+    line-height: 1.6em;
+    background: #EAF2FF;
+}
+
+hr {
+    margin: 40px 0;
+    border: none;
+    border-bottom: solid 1px #eee;
+}
+
+#container {
+    margin: 0 auto;
+    width: 960px;
+}
+
+#sidebar {
+    position: fixed;
+    top: 80px;
+    left: calc(50%-480px);
+    width: 150px;
+    margin-right: 50px;
+    border-right: solid 1px #eee;
+}
+
+#content {
+    margin: 0 0 0 200px;
+    width: 760px;
+}
+
+.method {
+    padding: 0 0 40px;
+}
+.method h3 {
+    margin: 0 0 10px;
+}
+.method table {
+    margin: 0;
+    padding: 0;
+}
+.method table td {
+    padding: 0 15px;
+    font-size: 0.9em;
+    background: #f5f5f5;
+}
+.method table td:first-child {
+    background: #eee;
+}
+.method code {
+    margin: 10px 0 20px;
+}
+.method strong {
+    font-size: 0.9em;
+    color: #4D4D4D;
+}

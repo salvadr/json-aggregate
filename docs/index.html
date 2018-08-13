@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>json-aggregate - javascript aggreation utility for JSON-formatted data</title>
+    <link href="https://fonts.googleapis.com/css?family=Maven+Pro|Source+Code+Pro" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+<div id="container">
+
+    <div id="sidebar">
+        <ul>
+            <li><a href=#>What is it?</a></li>
+            <li><a href=#>Why?</a></li>
+            <li><a href=#>How to use</a></li>
+        </ul>
+
+        <b>Methods</b>
+        <ul>
+            <li><a href=#match>match</a></li>
+            <li><a href=#unwind>unwind</a></li>
+            <li><a href=#group>group</a></li>
+            <li><a href=#sort>sort</a></li>
+            <li><a href=#limit>limit</a></li>
+        </ul>
+
+        <b>Operators</b>
+        <ul>
+            <li><a href=#$avg>$avg</a></li>
+            <li><a href=#$first>$first</a></li>
+            <li><a href=#$last>$last</a></li>
+            <li><a href=#$min>$min</a></li>
+            <li><a href=#$max>$max</a></li>
+            <li><a href=#$sum>$sum</a></li>
+            <li><a href=#$push>$push</a></li>
+            <li><a href=#$addToSet>$addToSet</a></li>
+        </ul>
+        <ul>
+            <li><a href=#examples>Full Example</a></li>
+        </ul>
+    </div>
+
+    <div id="content">
+        <h1>json-aggregate</h1>
+        <h3>What is it?</h3>
+        <p><strong>json-aggregate</strong> is a javascript utility to perform aggregations on JSON-formatted data. It is inspired by the MongoDB Aggregation Framework, but in no way pretends to cover all its functionality.</p>
+        <h3>Why?</h3>
+        <p><strong>json-aggregate</strong> allows developers to perform aggregation queries on JSON data without the need to store it. Nowadays the average app sends/receives JSON from multiple sources/apis/etc., and this utility can help developers extract some insights from the data without the need to use a database.</p>
+        <h3>How to use</h3>
+        <p>Install via npm / yarn:</p>
+        <code>npm install json-aggregate</code>
+        <p>Use the <strong>create</strong> method with the JSON data to generate a collection:</p>
+        <code>
+            const jsonAggregate = require('json-aggregate')<br/>
+            const collection = jsonAggregate.create(myJsonData)
+        </code>
+        <hr/>
+        <h2>Methods</h2>
+        <div class="method">
+            <h3 id="match">match (options)</h3>
+            <table>
+                <tr>
+                    <td><strong>options</strong></td>
+                    <td><i>object</i></td>
+                    <td><i>function</i></td>
+                </tr>
+            </table>
+            <p>Filters the documents and only those that match the specified criteria are returned.</p>
+            <strong>Data</strong>
+            <code>
+                [{ "author" : "dave", "score" : 80, "views" : 100 },<br/>
+                { "author" : "dave", "score" : 85, "views" : 521 },<br/>
+                { "author" : "ahn", "score" : 60, "views" : 1000 },<br/>
+                { "author" : "li", "score" : 55, "views" : 5000 },<br/>
+                { "author" : "annT", "score" : 60, "views" : 50 },<br/>
+                { "author" : "li", "score" : 94, "views" : 999 },<br/>
+                { "author" : "ty", "score" : 95, "views" : 1000 }]<br/>
+            </code>
+            <strong>Aggregation</strong>
+            <code>
+                collection.match({ author : "dave" }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ "author" : "dave", "score" : 80, "views" : 100 }<br/>
+                { "author" : "dave", "score" : 85, "views" : 521 }]<br/>
+            </code>
+            <p>Alternatively, the same result can be achieved with a condition function:</p>
+            <code>
+                collection.match(item => item.author === "dave").exec()
+            </code>
+        </div>
+        
+        <div class="method">
+            <h3 id="unwind">unwind (field)</h3>
+            <table>
+                <tr>
+                    <td><strong>field</strong></td>
+                    <td><i>string</i></td>
+                </tr>
+            </table>
+            <p>Deconstructs an array field and returns a single record for each of its values.</p>
+            <strong>Data</strong>
+            <code>{ "item" : "ABC1", sizes: [ "S", "M", "L"] }</code>
+            <strong>Aggregation</strong>
+            <code>collection.unwind("sizes").exec()</code>
+            <strong>Results</strong>
+            <code>
+                [{ "item" : "ABC1", "sizes" : "S" },<br/>
+                { "item" : "ABC1", "sizes" : "M" },<br/>
+                { "item" : "ABC1", "sizes" : "L" }]
+            </code>
+        </div>
+
+        
+        <div class="method">
+          <h3 id="group">group (options)</h3>
+          <table>
+            <tr>
+              <td><strong>options</strong></td>
+              <td><i>string</i></td>
+              <td><i>array</i></td>
+              <td><i>object</i></td>
+            </tr>
+          </table>
+          <p>Groups documents by the specified options and returns the aggregated data with each group having a distinct <strong>id</strong> field.</p>
+          <strong>Data</strong>
+          <code>
+              [{ company: "a", employeeCount: 45, category: 1, product: "Product A", price: 120 },<br/>
+              { company: "a", employeeCount: 45, category: 1, product: "Product B", price: 80 },<br/>
+              { company: "a", employeeCount: 45, category: 2, product: "Product C", price: 105 },<br/>
+              { company: "a", employeeCount: 45, category: 2, product: "Product D", price: 95 },<br/>
+              { company: "b", employeeCount: 30, category: 1, product: "Product A", price: 40 },<br/>
+              { company: "b", employeeCount: 30, category: 1, product: "Product B", price: 100 },<br/>
+              { company: "b", employeeCount: 30, category: 2, product: "Product C", price: 60 },<br/>
+              { company: "b", employeeCount: 30, category: 2, product: "Product D", price: 130 }]
+          </code>
+          <strong>Aggregation #1</strong>
+          <code>
+            collection.group('company').exec()<br/>
+            // or collection.group({ id: 'company' })
+          </code>
+          <strong>Results #1</strong>
+          <code>["a", "b"]</code>
+          <br/>
+          <strong>Aggregation #2 (with operator)</strong>
+          <code>
+              collection.group({<br/>
+              &emsp;id: 'company',<br/>
+              &emsp;lowestPrice: { $min: 'price'}<br/>
+              })<br/>
+              .exec()
+          </code>
+          <strong>Results #2</strong>
+          <code>
+            [{ id: 'a', lowestPrice: 80 },<br/>
+            { id: 'b', lowestPrice: 40 }]
+          </code>
+          <br/>
+          <strong>Aggregation #3 (multiple keys)</strong>
+          <code>
+              collection.group({<br/>
+              &emsp;id: ['company', 'category'],<br/>
+              &emsp;max: { $max: 'price' }<br/>
+              })<br/>
+              .exec()
+          </code>
+          <strong>Results #3</strong>
+          <code>
+              [{ id: { company: 'a', category: 1 }, max: 120 },<br/>
+              { id: { company: 'a', category: 2 }, max: 105 },<br/>
+              { id: { company: 'b', category: 1 }, max: 100 },<br/>
+              { id: { company: 'b', category: 2 }, max: 130 }]
+          </code>
+        </div>
+
+        
+        <div class="method">
+            <h3 id="sort">sort (criteria)</h3>
+            <table>
+              <tr>
+                <td><strong>criteria</strong></td>
+                <td><i>object</i></td>
+              </tr>
+            </table>
+            <p>Sorts values according to the criteria passed.</p>
+            <strong>Data</strong>
+            <code>
+              [{ company: 'a', price: 90 },<br/>
+              { company: 'b', price: 120 },<br/>
+              { company: 'b', price: 50 }]
+            </code>
+            <strong>Aggregation</strong>
+            <code>collection.sort({ company: -1, price: 1 }).exec()</code>
+            <strong>Results</strong>
+            <code>[{ company: 'b', price: 50 },<br/>
+              { company: 'b', price: 120 },<br/>
+              { company: 'a', price: 90 }]</code>
+        </div>
+
+        <div class="method">
+          <h3 id="limit">limit (n)</h3>
+          <table>
+              <tr>
+                <td><strong>n</strong></td>
+                <td><i>number</i></td>
+              </tr>
+            </table>
+            <p>Shrinks the array of results to the desired length. An <i>Array.slice</i> proxy for convenience (in chaining).</p>
+            <strong>Data</strong>
+            <code>
+                [{ company: "a", employeeCount: 45, category: 1, product: "Product A", price: 120 },<br/>
+                { company: "a", employeeCount: 45, category: 1, product: "Product B", price: 80 },<br/>
+                { company: "a", employeeCount: 45, category: 2, product: "Product C", price: 105 },<br/>
+                { company: "a", employeeCount: 45, category: 2, product: "Product D", price: 95 },<br/>
+                { company: "b", employeeCount: 30, category: 1, product: "Product A", price: 40 },<br/>
+                { company: "b", employeeCount: 30, category: 1, product: "Product B", price: 100 },<br/>
+                { company: "b", employeeCount: 30, category: 2, product: "Product C", price: 60 },<br/>
+                { company: "b", employeeCount: 30, category: 2, product: "Product D", price: 130 }]
+            </code>
+            <strong>Aggregation</strong>
+            <code>collection.sort({ price: -1 }).limit(2).exec()</code>
+            <strong>Results</strong>
+            <code>
+              [{ company: "b", employeeCount: 30, category: 2, product: "Product D", price: 130 },<br/>
+              { company: "a", employeeCount: 45, category: 1, product: "Product A", price: 120 }]
+            </code>
+        </div>
+
+        <hr/>
+        <h2>Operators</h2>
+        <strong>Data</strong>
+        <code>
+            [{ company: "a", employeeCount: 45, category: 1, product: "Product A", price: 120 },<br/>
+            { company: "a", employeeCount: 45, category: 1, product: "Product B", price: 80 },<br/>
+            { company: "a", employeeCount: 45, category: 2, product: "Product C", price: 105 },<br/>
+            { company: "a", employeeCount: 45, category: 2, product: "Product D", price: 95 },<br/>
+            { company: "b", employeeCount: 30, category: 1, product: "Product A", price: 40 },<br/>
+            { company: "b", employeeCount: 30, category: 1, product: "Product B", price: 100 },<br/>
+            { company: "b", employeeCount: 30, category: 2, product: "Product C", price: 60 },<br/>
+            { company: "b", employeeCount: 30, category: 2, product: "Product D", price: 130 }]
+        </code>
+        <br/>
+        <div class="method">
+            <h3 id="$avg">$avg</h3>
+            <p>Returns the average of the selected field for the group of records.</p>
+            <strong>Aggregation</strong>
+            <code>
+                collection.group({ id: 'product', count: { $avg: 'price' } }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ id: 'Product A', count: 80 },<br/>
+                { id: 'Product B', count: 90 },<br/>
+                { id: 'Product C', count: 82.5 },<br/>
+                { id: 'Product D', count: 112.5 }]
+            </code>
+        </div>
+        <div class="method">
+            <h3 id="$first">$first</h3>
+            <p>Returns the first record found for each group.</p>
+            <strong>Aggregation</strong>
+            <code>
+                collection.group({ id: 'company', product: { $first: 'product' } }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ id: 'a', product: 'Product A'},<br/>
+                { id: 'b', product: 'Product A'}]
+            </code>
+        </div>
+        
+        <div class="method">
+            <h3 id="$last">$last</h3>
+            <p>Returns the last record found for each group.</p>
+            <strong>Aggregation</strong>
+            <code>
+                collection.group({ id: 'company', product: { $last: 'product' } }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ id: 'a', product: 'Product D'},<br/>
+                { id: 'b', product: 'Product D'}]
+            </code>
+        </div>
+
+        <div class="method">
+            <h3 id="$min">$min</h3>
+            <p>Returns the minimum value found for the chosen field of each group.</p>
+            <strong>Aggregation</strong>
+            <code>
+                collection.group({ id: 'company', lowestPrice: { $min: 'price' } }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ id: 'a', lowestPrice: 80 },<br/>
+                { id: 'b', lowestPrice: 40 }]
+            </code>
+        </div>
+
+        <div class="method">
+            <h3 id="$max">$max</h3>
+            <p>Returns the maximum value found for the chosen field of each group.</p>
+            <strong>Aggregation</strong>
+            <code>
+                collection.group({ id: 'company', highestPrice: { $max: 'price' } }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ id: 'a', highestPrice: 120 },<br/>
+                { id: 'b', highestPrice: 130 }]
+            </code>
+        </div>
+
+        <div class="method">
+            <h3 id="$sum">$sum</h3>
+            <p>Returns the sum of all the values from the chosen field of each group. Admits the value <strong>1</strong> to perform a count of the records within each group.</p>
+            <strong>Aggregation</strong>
+            <code>
+                collection.group({ id: 'company', count: { $sum: 1 } }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ id: 'a', count: 4 },<br/>
+                { id: 'b', count: 4 }]
+            </code>
+        </div>
+
+        <div class="method">
+            <h3 id="$push">$push</h3>
+            <p>Appends the values of specific fields into each group. This operator expects an array.</p>
+            <strong>Aggregation</strong>
+            <code>
+                collection.group({ id: 'company', products: { $push: ['product', 'price'] }).exec()
+            </code>
+            <strong>Result</strong>
+            <code>
+                [{ id: 'a',<br/>
+                &emsp;products: [<br/>
+                &emsp;&emsp;{ product: 'Product A', price: 120 },<br/>
+                &emsp;&emsp;{ product: 'Product B', price: 80 },<br/>
+                &emsp;&emsp;{ product: 'Product C', price: 105 },<br/>
+                &emsp;&emsp;{ product: 'Product D', price: 95 }<br/>
+                &emsp;]<br/>
+                },<br/>
+                { id: 'b',<br/>
+                &emsp;products: [<br/>
+                &emsp;&emsp;{ product: 'Product A', price: 40 },<br/>
+                &emsp;&emsp;{ product: 'Product B', price: 100 },<br/>
+                &emsp;&emsp;{ product: 'Product C', price: 60 },<br/>
+                &emsp;&emsp;{ product: 'Product D', price: 130 }<br/>
+                &emsp;]<br/>
+                }]
+            </code>
+        </div>
+
+
+        <div class="method">
+          <h3 id="$addToSet">$addToSet</h3>
+          <p>Adds unique values present in the chosen field for each group.</p>
+          <strong>Aggregation</strong>
+          <code>
+              collection.group({ id: 'company', categories: { $addToSet: 'category' } }).exec()
+          </code>
+          <strong>Result</strong>
+          <code>
+            [{ id: 'a', categories: [1, 2] },
+            { id: 'b', categories: [1, 2] }]
+          </code>
+        </div>
+
+        <hr/>
+        <h3 id="examples">Full example</h3>
+        <strong>Data</strong>
+        <code>
+        [{ shop: "XYZ", "item" : "A", sizes: [ "S", "M", "L"], price: '99' },<br/>
+            { shop: "XYZ", "item" : "B", sizes: [ "M", "L"], price: '69' },<br/>
+            { shop: "XYZ", "item" : "C", sizes: [ "S", "L", "XL"], price: '120' },<br/>
+            { shop: "MNO", "item" : "A", sizes: [ "S" ], price: '110' },<br/>
+            { shop: "MNO", "item" : "B", sizes: [ "S", "M", "L"], price: '80' },<br/>
+            { shop: "MNO", "item" : "C", sizes: [ "S", "M", "XL"], price: '100' },<br/>
+            { shop: "JKL", "item" : "A", sizes: [ "S", "M", "XL" ], price: '105' },<br/>
+            { shop: "JKL", "item" : "B", sizes: [ "M", "L"], price: '50' },<br/>
+            { shop: "JKL", "item" : "C", sizes: [ "M", "XL"], price: '110' }]
+        </code>
+        <br/>
+        <strong>Aggregation</strong>
+        <code>
+          collection<br/>
+          .match(item => item.price > 60)<br/>
+          .unwind('sizes')<br/>
+          .group({<br/>
+            &emsp;id: ['item', 'sizes'],<br/>
+            &emsp;whereToBuy: { $push: ['shop', 'price'] }<br/>
+          })<br/>
+          .exec()
+        </code>
+        <br/>
+        <strong>Result</strong>
+        <code>
+          [{<br/>
+            &emsp;"id": {"item": "A", "sizes": "L"},<br/>
+            &emsp;"whereToBuy": [{"price": "99", "shop": "XYZ"}]<br/>},{<br/>
+              &emsp;"id": {"item": "C", "sizes": "L"},<br/>
+              &emsp;"whereToBuy": [{"price": "120", "shop": "XYZ"}]<br/>
+            },{<br/>
+              &emsp;"id": {"item": "B", "sizes": "S"},<br/>
+              &emsp;"whereToBuy": [{"price": "80", "shop": "MNO"}]<br/>
+            },{<br/>
+              &emsp;"id": {"item": "B", "sizes": "M"},<br/>
+              &emsp;"whereToBuy": [{"price": "69", "shop": "XYZ"},{"price": "80", "shop": "MNO"}]<br/>
+            },{<br/>
+              &emsp;"id": {"item": "B", "sizes": "L"},<br/>
+              &emsp;"whereToBuy": [{"price": "69", "shop": "XYZ"}, {"price": "80", "shop": "MNO"}]<br/>
+            },{<br/>
+              &emsp;"id": {"item": "C", "sizes": "S"},<br/>
+              &emsp;"whereToBuy": [{"price": "120", "shop": "XYZ"},{"price": "100", "shop": "MNO"}]<br/>},{<br/>
+              &emsp;"id": {"item": "A", "sizes": "S"},<br/>
+              &emsp;"whereToBuy": [{"price": "99", "shop": "XYZ"}, {"price": "110", "shop": "MNO"}, {"price": "105", "shop": "JKL"}]<br/>},{<br/>
+              &emsp;"id": {"item": "A", "sizes": "M"},<br/>
+              &emsp;"whereToBuy": [{"price": "99", "shop": "XYZ"},{"price": "105", "shop": "JKL"}]<br/>},{<br/>
+              &emsp;"id": {"item": "A", "sizes": "XL"},<br/>
+              &emsp;"whereToBuy": [{"price": "105", "shop": "JKL"}]<br/>},{<br/>
+              &emsp;"id": {"item": "C", "sizes": "M"},<br/>
+              &emsp;"whereToBuy": [{"price": "100", "shop": "MNO"},{"price": "110", "shop": "JKL"}]<br/>},{<br/>
+              &emsp;"id": {"item": "C", "sizes": "XL"},<br/>
+              &emsp;"whereToBuy": [{"price": "120", "shop": "XYZ"}, {"price": "100", "shop": "MNO"}, {"price": "110", "shop": "JKL"}]<br/>
+            }]
+        </code>
+
+        <br/><br/>
+      </div>
+
+    </div>
+    <script src="https://embed.runkit.com"></script>
+  </body>
+</html>
