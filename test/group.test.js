@@ -38,12 +38,12 @@ describe('group', () => {
       collection
       .group({
         id: 'company',
-        count: { $sum: 'employeeCount' }
+        count: { $sum: 'price' }
       })
       .exec()
     ).toEqual([
-        { id: 'a', count: 180 },
-        { id: 'b', count: 120 }
+        { id: 'a', count: 399.5 },
+        { id: 'b', count: 340 }
     ])
   })
 
@@ -112,8 +112,8 @@ describe('group', () => {
       })
       .exec()
     ).toEqual([
-      { id: 'a', lowestPrice: 80 },
-      { id: 'b', lowestPrice: 40 }
+      { id: 'a', lowestPrice: 79.5 },
+      { id: 'b', lowestPrice: 49.9 }
     ])
   })
 
@@ -129,16 +129,16 @@ describe('group', () => {
       { id: 'a',
         products: [
           { product: 'Product A', price: 120 },
-          { product: 'Product B', price: 80 },
+          { product: 'Product B', price: 79.5 },
           { product: 'Product C', price: 105 },
           { product: 'Product D', price: 95 }
         ]
       },
       { id: 'b',
         products: [
-          { product: 'Product A', price: 40 },
+          { product: 'Product A', price: 49.9 },
           { product: 'Product B', price: 100 },
-          { product: 'Product C', price: 60 },
+          { product: 'Product C', price: 60.1 },
           { product: 'Product D', price: 130 }
         ]
       }
@@ -219,16 +219,16 @@ describe('group', () => {
       .exec()
     ).toEqual([{
       id: { company: 'a', category: 1 },
-      avg: 100
+      avg: 99.75
     }, {
       id: { company: 'a', category: 2 },
       avg: 100
     }, {
       id: { company: 'b', category: 1 },
-      avg: 70
+      avg: 74.95
     }, {
       id: { company: 'b', category: 2 },
-      avg: 95
+      avg: 95.05
     }])
   })
   

@@ -22,7 +22,7 @@ describe('match', () => {
         employeeCount: 30,
         category: 1,
         product: 'Product A',
-        price: 40
+        price: 49.9
       }
     ])
   })

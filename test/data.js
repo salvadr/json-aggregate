@@ -11,7 +11,7 @@ const products = [
     employeeCount: 45,
     category: 1,
     product: 'Product B',
-    price: 80
+    price: 79.5
   },
   {
     company: 'a',
@@ -32,7 +32,7 @@ const products = [
     employeeCount: 30,
     category: 1,
     product: 'Product A',
-    price: 40
+    price: 49.9
   },
   {
     company: 'b',
@@ -46,7 +46,7 @@ const products = [
     employeeCount: 30,
     category: 2,
     product: 'Product C',
-    price: 60
+    price: 60.1
   },
   {
     company: 'b',
