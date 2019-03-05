@@ -61,6 +61,21 @@ describe('group', () => {
     ])
   })
 
+
+  test('group with $avg (multiple properties)', () => {
+    expect(
+      collection
+      .group({
+        id: 'company',
+        count: { $avg: ['employeeCount', 'price'] }
+      })
+      .exec()
+    ).toEqual([
+        { id: 'a', count: 72.4375 },
+        { id: 'b', count: 57.5 }
+    ])
+  })
+
   test('group with $first (property', () => {
     expect(
       collection
