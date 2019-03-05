@@ -54,7 +54,7 @@ const products = [
     category: 2,
     product: 'Product D',
     price: 130
-  },
+  }
 ]
 
 module.exports = { products }
